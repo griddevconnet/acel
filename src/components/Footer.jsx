@@ -11,7 +11,7 @@ const FOOTER_LINK_TARGETS = {
   Certification: '/certification',
   Governance: '/governance',
   Sectors: '/what-we-do#sectors',
-  'Become a member': '/membership',
+  'Become a member': '/membership/apply',
   'Member directory': '/membership/directory',
   'Verify a certificate': '/certification/verify',
   Contact: '/contact',

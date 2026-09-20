@@ -273,11 +273,11 @@ export default function AcelGreenGlassConcept() {
             </p>
 
             <div style={{ marginTop: 30, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
-              <a href="#join" className="liquid-btn liquid-btn-hero" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+              <Link to="/membership/apply" className="liquid-btn liquid-btn-hero" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
                 <span className="liquid-blob" />
                 <span className="liquid-blob two" />
                 <span className="liquid-label">Become a member</span>
-              </a>
+              </Link>
               <Link
                 to="/certification"
                 className="secondary-btn"

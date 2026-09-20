@@ -45,7 +45,7 @@ export default function Nav() {
           </span>
           <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontFamily: "'Fraunces', serif", color: '#00142D', fontSize: 22, letterSpacing: '-0.01em', lineHeight: 1 }}>
             <span>ACEL</span>
-            <span style={{ maxWidth: 174, color: '#C37C0C', fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 12, fontWeight: 600, lineHeight: 1.2, letterSpacing: '0.01em', marginTop: 5 }}>
+            <span style={{ maxWidth: 148, color: '#C37C0C', fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 10.5, fontWeight: 600, lineHeight: 1.15, letterSpacing: '0.01em', marginTop: 4 }}>
               African Chamber<br />of ESG Leadership
             </span>
           </span>
@@ -62,7 +62,7 @@ export default function Nav() {
         </ul>
 
         <div className="hidden lg:block">
-          <Link to="/membership" className="liquid-btn liquid-btn-nav" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+          <Link to="/membership/apply" className="liquid-btn liquid-btn-nav" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
             <span className="liquid-blob" />
             <span className="liquid-blob two" />
             <span className="liquid-label">Become a member</span>
@@ -114,7 +114,7 @@ export default function Nav() {
             ))}
           </ul>
           <Link
-            to="/membership"
+            to="/membership/apply"
             className="liquid-btn liquid-btn-nav"
             style={{ marginTop: 18, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
           >

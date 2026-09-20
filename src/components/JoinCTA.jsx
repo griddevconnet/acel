@@ -21,7 +21,7 @@ export default function JoinCTA() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
-                  to="/membership"
+                  to="/membership/apply"
                   className="liquid-btn liquid-btn-nav"
                   style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
                 >
