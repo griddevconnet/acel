@@ -31,7 +31,20 @@ const validate = (v) => {
   return e
 }
 
+const validateStepTwo = (v) => {
+  const e = {}
+  if (!v.fullName.trim()) e.fullName = 'Enter your name.'
+  if (!v.email.trim()) e.email = 'Enter your email address.'
+  else if (!isEmail(v.email)) e.email = 'Enter a valid email address, like name@example.com.'
+  if (!v.country.trim()) e.country = 'Enter your country.'
+  if (!v.role.trim()) e.role = 'Enter your current role.'
+  if (v.background.trim().length < 20) e.background = 'Write at least a couple of sentences about your experience.'
+  return e
+}
+
 export default function CertificationRegister() {
+  const [step, setStep] = useState(1)
+  const [localErrors, setLocalErrors] = useState({})
   const [paying, setPaying] = useState(false)
   const [paymentRef, setPaymentRef] = useState('')
 
@@ -59,8 +72,193 @@ export default function CertificationRegister() {
       }
     },
   })
+
   const { bind, onSubmit, status, submitError, values, reset } = form
-  const levelBinding = bind('level')
+
+  const bindWithLocalError = (field) => {
+    const binding = bind(field)
+    return {
+      ...binding,
+      error: localErrors[field] ?? binding.error,
+      onChange: (e) => {
+        binding.onChange(e)
+        setLocalErrors((prev) => ({ ...prev, [field]: undefined }))
+      },
+    }
+  }
+
+  const levelBinding = bindWithLocalError('level')
+  const fullNameBinding = bindWithLocalError('fullName')
+  const emailBinding = bindWithLocalError('email')
+  const phoneBinding = bindWithLocalError('phone')
+  const countryBinding = bindWithLocalError('country')
+  const roleBinding = bindWithLocalError('role')
+  const organisationBinding = bindWithLocalError('organisation')
+  const backgroundBinding = bindWithLocalError('background')
+  const consentBinding = bindWithLocalError('consent')
+  const gotchaBinding = bindWithLocalError('_gotcha')
+
+  const steps = [
+    { id: 1, label: 'Certification level' },
+    { id: 2, label: 'Your details' },
+    { id: 3, label: 'Review & pay' },
+  ]
+
+  const progress = ((step - 1) / (steps.length - 1)) * 100
+
+  const focusFirstError = () => {
+    requestAnimationFrame(() => {
+      document.querySelector('[aria-invalid="true"]')?.focus()
+    })
+  }
+
+  const goNext = () => {
+    if (step === 1) {
+      if (!values.level) {
+        setLocalErrors({ level: 'Choose the level you are registering for.' })
+        focusFirstError()
+        return
+      }
+      setLocalErrors({})
+      setStep(2)
+      return
+    }
+
+    if (step === 2) {
+      const errors = validateStepTwo(values)
+      setLocalErrors(errors)
+      if (Object.keys(errors).length > 0) {
+        focusFirstError()
+        return
+      }
+      setStep(3)
+    }
+  }
+
+  const goBack = () => setStep((current) => Math.max(1, current - 1))
+
+  const renderStepContent = () => {
+    if (step === 1) {
+      return (
+        <fieldset>
+          <legend className="mb-3 text-[14px] font-medium text-ink/85">Certification level</legend>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {certification.levels.map((lvl) => (
+              <label
+                key={lvl.name}
+                className="flex cursor-pointer flex-col gap-2 rounded-xl border border-ink/15 bg-white p-4 transition-colors hover:border-gold has-[:checked]:border-emerald has-[:checked]:bg-emerald/5"
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span className="font-display text-[1.1rem] text-ink">{lvl.name}</span>
+                  <input
+                    type="radio"
+                    name="level"
+                    value={lvl.name}
+                    checked={values.level === lvl.name}
+                    onChange={(e) => {
+                      levelBinding.onChange(e)
+                      setLocalErrors((prev) => ({ ...prev, level: undefined }))
+                    }}
+                    aria-invalid={localErrors.level ? 'true' : undefined}
+                    aria-describedby={localErrors.level ? 'level-error' : undefined}
+                    className="h-4 w-4 accent-[#047622]"
+                  />
+                </span>
+                <span className="text-[13.5px] leading-[1.55] text-ink/65">{lvl.body}</span>
+                <span className="mt-auto pt-1 text-[13px] text-ink/55">
+                  Fee {feeFor(lvl.name)}
+                </span>
+              </label>
+            ))}
+          </div>
+          {localErrors.level && (
+            <p id="level-error" role="alert" className="mt-2 text-[13px] text-[#B42318]">
+              {localErrors.level}
+            </p>
+          )}
+        </fieldset>
+      )
+    }
+
+    if (step === 2) {
+      return (
+        <>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <TextField label="Full name" required autoComplete="name" {...fullNameBinding} />
+            <TextField label="Email address" type="email" required autoComplete="email" {...emailBinding} />
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <TextField label="Phone" type="tel" autoComplete="tel" {...phoneBinding} />
+            <TextField label="Country" required autoComplete="country-name" {...countryBinding} />
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <TextField label="Current role" required autoComplete="organization-title" {...roleBinding} />
+            <TextField label="Organisation" autoComplete="organization" {...organisationBinding} />
+          </div>
+          <TextAreaField
+            label="Your background"
+            required
+            rows={6}
+            hint="Your ESG or sustainability experience, and any relevant qualifications."
+            {...backgroundBinding}
+          />
+        </>
+      )
+    }
+
+    return (
+      <>
+        <div className="rounded-xl border border-ink/10 bg-ink/5 p-5">
+          <div className="mb-4 flex items-center justify-between gap-4 border-b border-ink/10 pb-4">
+            <span className="text-[12px] font-medium uppercase tracking-[0.12em] text-ink/50">Selected level</span>
+            <span className="font-display text-[1.4rem] text-ink">{values.level}</span>
+          </div>
+          <dl className="grid gap-4 text-[14px] leading-[1.7] text-ink/70 sm:grid-cols-2">
+            <div>
+              <dt className="font-medium text-ink">Full name</dt>
+              <dd>{values.fullName || '—'}</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-ink">Email</dt>
+              <dd>{values.email || '—'}</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-ink">Country</dt>
+              <dd>{values.country || '—'}</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-ink">Role</dt>
+              <dd>{values.role || '—'}</dd>
+            </div>
+            <div className="sm:col-span-2">
+              <dt className="font-medium text-ink">Background</dt>
+              <dd>{values.background || '—'}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="rounded-xl border border-gold/30 bg-gold/5 px-5 py-4 text-[13.5px] leading-[1.6] text-ink/70">
+          {paystackDemoMode ? (
+            <>
+              <strong className="text-ink">Payment (demo mode).</strong> Paystack is not connected to a
+              live key yet, so submitting will simulate a successful payment rather than charge a card.
+            </>
+          ) : (
+            <>
+              <strong className="text-ink">Payment via Paystack.</strong> Submitting opens a secure
+              Paystack checkout for {feeFor(values.level)}. Your registration is sent once payment succeeds.
+            </>
+          )}
+        </div>
+
+        <CheckboxField {...consentBinding} checked={values.consent}>
+          I agree that ACEL may use these details to process my registration and contact me, as described in the{' '}
+          <Link to="/privacy" className="text-emerald underline underline-offset-2">privacy policy</Link>.
+        </CheckboxField>
+        <Honeypot value={values._gotcha} onChange={gotchaBinding.onChange} />
+      </>
+    )
+  }
 
   return (
     <>
@@ -76,7 +274,7 @@ export default function CertificationRegister() {
               {status === 'success' ? (
                 <FormSuccess
                   title="Registration received"
-                  onReset={() => { reset(); setPaymentRef('') }}
+                  onReset={() => { reset(); setPaymentRef(''); setStep(1); setLocalErrors({}) }}
                   resetLabel="Register another person"
                 >
                   <p>
@@ -88,87 +286,56 @@ export default function CertificationRegister() {
                 </FormSuccess>
               ) : (
                 <form onSubmit={onSubmit} noValidate className="relative flex flex-col gap-8">
-                  <fieldset>
-                    <legend className="mb-3 text-[14px] font-medium text-ink/85">Certification level</legend>
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      {certification.levels.map((lvl) => (
-                        <label
-                          key={lvl.name}
-                          className="flex cursor-pointer flex-col gap-2 rounded-xl border border-ink/15 bg-white p-4 transition-colors hover:border-gold has-[:checked]:border-emerald has-[:checked]:bg-emerald/5"
-                        >
-                          <span className="flex items-center justify-between gap-3">
-                            <span className="font-display text-[1.1rem] text-ink">{lvl.name}</span>
-                            <input
-                              type="radio"
-                              name="level"
-                              value={lvl.name}
-                              checked={values.level === lvl.name}
-                              onChange={levelBinding.onChange}
-                              aria-invalid={levelBinding.error ? 'true' : undefined}
-                              aria-describedby={levelBinding.error ? 'level-error' : undefined}
-                              className="h-4 w-4 accent-[#047622]"
-                            />
-                          </span>
-                          <span className="text-[13.5px] leading-[1.55] text-ink/65">{lvl.body}</span>
-                          <span className="mt-auto pt-1 text-[13px] text-ink/55">
-                            Fee {feeFor(lvl.name)}
-                          </span>
-                        </label>
+                  <div className="mb-2">
+                    <div className="mb-3 flex items-center justify-between text-[12px] font-medium uppercase tracking-[0.12em] text-ink/55">
+                      <span>Progress</span>
+                      <span>{step}/{steps.length}</span>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-ink/10">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-emerald to-gold transition-all duration-300"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <div className="mt-4 flex justify-between gap-3 text-[12px] font-medium text-ink/60">
+                      {steps.map((item) => (
+                        <span key={item.id} className={item.id === step ? 'text-ink' : ''}>
+                          {item.label}
+                        </span>
                       ))}
                     </div>
-                    {levelBinding.error && (
-                      <p id="level-error" role="alert" className="mt-2 text-[13px] text-[#B42318]">
-                        {levelBinding.error}
-                      </p>
-                    )}
-                  </fieldset>
+                  </div>
 
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <TextField label="Full name" required autoComplete="name" {...bind('fullName')} />
-                    <TextField label="Email address" type="email" required autoComplete="email" {...bind('email')} />
-                  </div>
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <TextField label="Phone" type="tel" autoComplete="tel" {...bind('phone')} />
-                    <TextField label="Country" required autoComplete="country-name" {...bind('country')} />
-                  </div>
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <TextField label="Current role" required autoComplete="organization-title" {...bind('role')} />
-                    <TextField label="Organisation" autoComplete="organization" {...bind('organisation')} />
-                  </div>
-                  <TextAreaField
-                    label="Your background"
-                    required
-                    rows={6}
-                    hint="Your ESG or sustainability experience, and any relevant qualifications."
-                    {...bind('background')}
-                  />
+                  {renderStepContent()}
 
-                  <CheckboxField {...bind('consent')} checked={values.consent}>
-                    I agree that ACEL may use these details to process my registration and contact me, as described in the{' '}
-                    <Link to="/privacy" className="text-emerald underline underline-offset-2">privacy policy</Link>.
-                  </CheckboxField>
-                  <Honeypot value={values._gotcha} onChange={bind('_gotcha').onChange} />
                   {status === 'error' && <FormError message={submitError} />}
 
-                  <div className="rounded-xl border border-gold/30 bg-gold/5 px-5 py-4 text-[13.5px] leading-[1.6] text-ink/70">
-                    {paystackDemoMode ? (
-                      <>
-                        <strong className="text-ink">Payment (demo mode).</strong> Paystack is not connected to a
-                        live key yet, so submitting will simulate a successful payment rather than charge a card.
-                      </>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+                    {step > 1 ? (
+                      <button
+                        type="button"
+                        onClick={goBack}
+                        className="inline-flex items-center justify-center rounded-full border border-ink/15 px-5 py-3 text-[14px] font-medium text-ink transition-colors hover:border-ink/30"
+                      >
+                        Back
+                      </button>
                     ) : (
-                      <>
-                        <strong className="text-ink">Payment via Paystack.</strong> Submitting opens a secure
-                        Paystack checkout for {values.level ? feeFor(values.level) : 'the level fee'}. Your
-                        registration is sent once payment succeeds.
-                      </>
+                      <span />
                     )}
-                  </div>
 
-                  <div>
-                    <SubmitButton busy={status === 'submitting'} busyLabel={paying ? 'Waiting for payment…' : 'Submitting…'}>
-                      {`Pay${values.level ? ` ${feeFor(values.level)}` : ''} & submit registration`}
-                    </SubmitButton>
+                    {step < steps.length ? (
+                      <button
+                        type="button"
+                        onClick={goNext}
+                        className="inline-flex items-center justify-center rounded-full bg-ink px-6 py-3 text-[14px] font-medium text-paper transition-colors hover:bg-ink/90"
+                      >
+                        Continue
+                      </button>
+                    ) : (
+                      <SubmitButton busy={status === 'submitting'} busyLabel={paying ? 'Waiting for payment…' : 'Submitting…'}>
+                        {`Pay ${feeFor(values.level)} & submit registration`}
+                      </SubmitButton>
+                    )}
                   </div>
                 </form>
               )}
