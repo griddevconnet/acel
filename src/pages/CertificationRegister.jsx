@@ -15,7 +15,7 @@ const feeFor = (levelName) =>
 
 // The fees above are single fixed figures per level (unlike the membership
 // application-fee bands), so they can be charged directly — pulled out as a
-// plain number for Paystack, which wants a dollar amount, not a display string.
+// plain number for Paystack, which wants a local-currency amount, not a display string.
 const feeAmountFor = (levelName) => Number(feeFor(levelName)?.replace(/[^0-9.]/g, ''))
 
 const validate = (v) => {
@@ -48,6 +48,7 @@ export default function CertificationRegister() {
         const result = await payWithPaystack({
           email: v.email,
           amountUsd: feeAmountFor(v.level),
+          currency: 'GHS',
           reference: `ACEL-CERT-${Date.now()}`,
           metadata: { level: v.level, fullName: v.fullName },
         })

@@ -35,12 +35,12 @@ function loadPaystackScript() {
 
 /**
  * Open the Paystack popup (or simulate it in demo mode).
- * amountUsd is a plain dollar amount, e.g. 250 for $250 — converted to the
+ * amount is a plain local-currency amount, e.g. 250 for GH₵ 250 — converted to the
  * minor unit Paystack expects internally.
  * Returns a promise that resolves with { reference, demo? } on success and
  * rejects if the payment is cancelled or fails.
  */
-export function payWithPaystack({ email, amountUsd, currency = 'USD', reference, metadata = {} }) {
+export function payWithPaystack({ email, amountUsd, currency = 'GHS', reference, metadata = {} }) {
   const ref = reference || `ACEL-${Date.now()}`
 
   if (paystackDemoMode) {

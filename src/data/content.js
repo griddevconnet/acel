@@ -161,13 +161,13 @@ export const membership = {
     { title: 'Renewal', body: 'Each year, confirming eligibility and completing the continuing professional development declaration where it applies.' },
   ],
   dues: {
-    body: 'Dues are set to be fair and proportionate. Organisational dues scale with size, individual dues scale with grade, and certification and examination fees are charged separately. Figures below are illustrative bands, in US dollars, until set and reviewed by the Board.',
+    body: 'Dues are set to be fair and proportionate. Organisational dues scale with size, individual dues scale with grade, and certification and examination fees are charged separately. Figures below are illustrative bands, in Ghana cedis, until set and reviewed by the Board.',
     items: [
-      { label: 'Application fee (organisations)', value: '$100 – $300' },
-      { label: 'Application fee (individuals)', value: '$20 – $50' },
-      { label: 'Certification — Foundation', value: '$100' },
-      { label: 'Certification — Practitioner', value: '$250' },
-      { label: 'Certification — Expert', value: '$500' },
+      { label: 'Application fee (organisations)', value: 'GH₵ 1,500 – GH₵ 4,500' },
+      { label: 'Application fee (individuals)', value: 'GH₵ 300 – GH₵ 750' },
+      { label: 'Certification — Foundation', value: 'GH₵ 1,500' },
+      { label: 'Certification — Practitioner', value: 'GH₵ 3,750' },
+      { label: 'Certification — Expert', value: 'GH₵ 7,500' },
     ],
   },
 }
