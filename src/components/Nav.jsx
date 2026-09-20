@@ -30,7 +30,7 @@ export default function Nav() {
           maxWidth: 1240,
           margin: '0 auto',
           borderRadius: 999,
-          padding: '11px 30px',
+          padding: '10px 28px',
           background: 'rgba(255,255,255,0.88)',
           backdropFilter: 'blur(18px)',
           WebkitBackdropFilter: 'blur(18px)',
@@ -40,12 +40,12 @@ export default function Nav() {
         }}
       >
         <Link to="/" className="brand-link" aria-label="ACEL home">
-          <span style={{ display: 'flex', width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: '9999px', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,20,45,0.14)' }}>
-            <Seal size={32} />
+          <span style={{ display: 'flex', width: 54, height: 54, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: '9999px', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,20,45,0.14)' }}>
+            <Seal size={44} />
           </span>
-          <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontFamily: "'Fraunces', serif", color: '#00142D', fontSize: 20, letterSpacing: '-0.01em', lineHeight: 1 }}>
+          <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontFamily: "'Fraunces', serif", color: '#00142D', fontSize: 22, letterSpacing: '-0.01em', lineHeight: 1 }}>
             <span>ACEL</span>
-            <span style={{ color: '#C37C0C', fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 11, lineHeight: 1.35, marginTop: 4 }}>
+            <span style={{ maxWidth: 174, color: '#C37C0C', fontFamily: "'IBM Plex Sans', sans-serif", fontSize: 12, fontWeight: 600, lineHeight: 1.2, letterSpacing: '0.01em', marginTop: 5 }}>
               African Chamber<br />of ESG Leadership
             </span>
           </span>
